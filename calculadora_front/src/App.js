@@ -68,7 +68,8 @@ const App=()=> {
   const Igual = () => {
   if (firstNumber !== '0' && operation !== '' && currentNumber !== '0') {
     let resultadoFinal = '';
-    let expressao = `${firstNumber} ${operation} ${currentNumber}`;
+    let expressao = `${firstNumber} ${operation} ${currentNumber}`
+    buscarHistorico();
 
     switch (operation) {
       case '+':
@@ -92,7 +93,9 @@ const App=()=> {
     setOperation('');
 
     // ✅ Envia para o back-end
-    enviarOperacao(expressao, resultadoFinal);
+    enviarOperacao(expressao, resultadoFinal).then(() => {
+      buscarHistorico();
+    });
   }
 };
 
@@ -101,6 +104,7 @@ const enviarOperacao = async (expressao, resultado) => {
     const response = await axios.post("http://localhost:5160/api/Operacao", {
       expressao,
       resultado
+      
     });
 
     console.log("Operação salva:", response.data);
@@ -115,6 +119,14 @@ const buscarHistorico = async () => {
     setHistorico(response.data);
   } catch (error) {
     console.error("Erro ao buscar histórico:", error);
+  }
+};
+const deletarOperacao = async (id) => {
+  try {
+    await axios.delete(`http://localhost:5160/api/Operacao?id=${id}`);
+    buscarHistorico();
+  } catch (error) {
+    console.error("Erro ao deletar operação:", error);
   }
 };
 
@@ -149,7 +161,7 @@ const buscarHistorico = async () => {
           <Button label="7"onClick={()=>handleAddNumber('7')}/>
               <Button label='8'onClick={()=>handleAddNumber('8')}/>
               <Button label='9' onClick={()=>handleAddNumber('9')}/>
-              <Button label="=" onClick={Igual}/>
+              <Button label="=" onClick={Igual} />
           </Linha>
       </Calculadora>
        {/* Histórico abaixo */}
@@ -157,7 +169,10 @@ const buscarHistorico = async () => {
     <h2>Histórico</h2>
     <ul style={{ listStyle: "none", padding: 0 }}>
       {historico.map((op) => (
-        <li key={op.id}>{op.expressao} = {op.resultado}</li>
+        <li key={op.id}>
+          <span>{op.expressao} = {op.resultado}</span>
+          <button onClick={() => deletarOperacao(op.id)} style={{ marginLeft: "10px", cursor: "pointer" }}>Deletar</button>
+        </li>
       ))}
     </ul>
   </historico>

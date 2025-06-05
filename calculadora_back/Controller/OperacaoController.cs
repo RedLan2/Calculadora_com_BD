@@ -33,5 +33,17 @@ namespace calculadora_back.Controller
             var operacoes = _context.Operacoes.ToList();
             return Ok(operacoes);
         }
+        [HttpDelete]
+        public IActionResult DeletarOperacao(int id)
+        {
+            var operacao = _context.Operacoes.Find(id);
+            if (operacao == null)
+            {
+                return NotFound();
+            }
+            _context.Operacoes.Remove(operacao);
+            _context.SaveChanges();
+            return Ok(operacao);
+        }
     }
 }
