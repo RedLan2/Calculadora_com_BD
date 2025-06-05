@@ -10,7 +10,7 @@ export const Container =styled.div`
         justify-content: center;
 `
 export const historico = styled.div`
-        background-color: #FFFFFF;
+        background-color:rgb(231, 18, 18);
         width: 30%;
         min-height:350px;
         margin-left: 20px;

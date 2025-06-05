@@ -1,5 +1,6 @@
 
 import { Calculadora, Container, Linha,historico } from "./styles"; 
+import axios from 'axios';
 import Button  from "./components/button";
 import Input from './components/input'
 import { useEffect, useState } from "react";
@@ -97,20 +98,12 @@ const App=()=> {
 
 const enviarOperacao = async (expressao, resultado) => {
   try {
-    const response = await fetch("http://localhost:5160/api/Operacao", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ expressao, resultado })
+    const response = await axios.post("http://localhost:5160/api/Operacao", {
+      expressao,
+      resultado
     });
 
-    if (!response.ok) {
-      throw new Error("Erro ao enviar operação");
-    }
-
-    const data = await response.json();
-    console.log("Operação salva no banco:", data);
+    console.log("Operação salva:", response.data);
   } catch (error) {
     console.error("Erro ao salvar operação:", error);
   }
@@ -118,9 +111,8 @@ const enviarOperacao = async (expressao, resultado) => {
 
 const buscarHistorico = async () => {
   try {
-    const response = await fetch("http://localhost:5160/api/Operacao");
-    const data = await response.json();
-    setHistorico(data);
+    const response = await axios.get("http://localhost:5160/api/Operacao");
+    setHistorico(response.data);
   } catch (error) {
     console.error("Erro ao buscar histórico:", error);
   }
@@ -133,6 +125,7 @@ const buscarHistorico = async () => {
   return (
     <Container>
       <Calculadora>
+    
       <Input  value={currentNumber}/>
       <Linha>
               <Button label="0"onClick={()=>handleAddNumber('0')}/>
@@ -160,7 +153,7 @@ const buscarHistorico = async () => {
           </Linha>
       </Calculadora>
        {/* Histórico abaixo */}
-      <historico>
+      <historico style={{ backgroundColor: "#f0f0f0", padding: "10px", borderRadius: "5px"}}>
     <h2>Histórico</h2>
     <ul style={{ listStyle: "none", padding: 0 }}>
       {historico.map((op) => (
